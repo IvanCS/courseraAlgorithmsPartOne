@@ -48,8 +48,8 @@ public class Percolation {
     private int countOfComponents;
     private int sitesGridSize;
     private int gridDimension;
-    private final int COUNT_OF_VIRTUAL_SITES = 2;
-    private final byte SITE_BLOCKED_STATE = -1;
+    private final static int COUNT_OF_VIRTUAL_SITES = 2;
+    private final static byte SITE_BLOCKED_STATE = -1;
 
     // create N-by-N grid, with all sites blocked
     public Percolation(int N) {
@@ -79,7 +79,7 @@ public class Percolation {
         componentWeights[sitesGridSize - 1] = 1;
 
         //initialize grid with blocked sites, despite virtual  sites
-        for (int i = 1; i < sitesGridSize - 2; i++) {
+        for (int i = 1; i <= sitesGridSize - 2; i++) {
             flatSitesGrid[i] = SITE_BLOCKED_STATE;
         }
     }
@@ -90,15 +90,22 @@ public class Percolation {
 
             int currentSiteIndex = (i - 1) * gridDimension + j;
 
+            //open site with link to itself for default root and default weight
+            if (!isOpen(i, j)) {
+                flatSitesGrid[currentSiteIndex] = currentSiteIndex;
+                componentWeights[currentSiteIndex] = 1;
+                componentWeights[0] = ++componentWeights[0]; //magnetize :)
+            }
+
             //look to bottom
             boolean isBottomVirtualSite = ((i + 1) > gridDimension);
             int bottomSiteIndex;
-            if (!isBottomVirtualSite) {
-                bottomSiteIndex = sitesGridSize + 1;
-                //union (currentSiteIndex, bottomSiteIndex]
-            }else if(isOpen(i + 1, j)){
+            if (isBottomVirtualSite) {
+                bottomSiteIndex = sitesGridSize-1;
+                weightAndUnion(currentSiteIndex,bottomSiteIndex );
+            } else if (isOpen(i + 1, j)) {
                 bottomSiteIndex = i * gridDimension + j;
-                //union (currentSiteIndex, bottomSiteIndex]
+                weightAndUnion(currentSiteIndex,bottomSiteIndex);
             }
 
             //look up
@@ -106,36 +113,30 @@ public class Percolation {
             int topSiteIndex;
             if (isTopVirtualSite) {
                 topSiteIndex = 0;
-                //union (currentSiteIndex, topSiteIndex)
+                weightAndUnion(topSiteIndex,currentSiteIndex);
             } else if (isOpen(i - 1, j)) {
                 topSiteIndex = (i - 2) * gridDimension + j;
-                //union (currentSiteIndex, topSiteIndex)
+                weightAndUnion(topSiteIndex,currentSiteIndex);
             }
 
             //look to the left
             if ((j - 1 > 0) && isOpen(i, j - 1)) {
                 int leftSiteIndex = (i - 1) * gridDimension + (j - 1);
-                //union (currentSiteIndex, leftSiteIndex)
+                weightAndUnion(currentSiteIndex,leftSiteIndex);
             }
 
             //look to the right
             if ((j + 1 <= gridDimension) && isOpen(i, j + 1)) {
                 int rightSiteIndex = (i - 1) * gridDimension + (j + 1);
-                //union (currentSiteIndex, rightSiteIndex)
+                weightAndUnion(currentSiteIndex,rightSiteIndex);
             }
-
-            //open site with link to itself in case has no siblings
-            if(!isOpen(i, j)){
-                flatSitesGrid[currentSiteIndex] = currentSiteIndex;
-            }
-
         }
     }
 
     // is site (row i, column j) open?
     public boolean isOpen(int i, int j) {
         if (((i < 1 || i > gridDimension) && (j < 1 || j > gridDimension))) {
-            throw new IndexOutOfBoundsException("indexes are out ouf rande : 1.." + gridDimension);
+            throw new IndexOutOfBoundsException("indexes are out ouf range : 1.." + gridDimension);
         }
 
         return flatSitesGrid[(i - 1) * gridDimension + j] != SITE_BLOCKED_STATE;
@@ -153,7 +154,7 @@ public class Percolation {
 
     // does the system percolate?
     public boolean percolates() {
-        return false;
+        return getRoot(0) == getRoot(sitesGridSize - 1);
     }
 
     // test client (optional)
@@ -181,11 +182,45 @@ public class Percolation {
         return isOutOfBound(i * (j + 1)) || isOpen(i, j + 1);
     }
 
-    private void weightAndUnion(int p, int k){
+    private void weightAndUnion(int p, int k) {
+        int pRoot = getRoot(p);
+        int weightParentOfP = componentWeights[pRoot];
+
+        int kRoot = getRoot(k);
+        int weightParentOfK = componentWeights[kRoot];
+
+        if (weightParentOfP >= weightParentOfK) {
+            flatSitesGrid[k] = pRoot;
+            componentWeights[pRoot] = ++componentWeights[pRoot];
+        } else {
+            flatSitesGrid[p] = kRoot;
+            componentWeights[kRoot] = ++componentWeights[kRoot];
+        }
+    }
+
+    private int getRoot(int c) {
+        int parent = flatSitesGrid[c];
+        if (c != parent) {
+            return getRoot(parent);
+        } else {
+            return c;
+        }
+
+//   int temp;
+// while (true) {
+//            temp = flatSitesGrid[parent];
+//
+//            if (parent == temp) {
+//                return parent;
+//            } else {
+//                parent = temp;
+//            }
+//
+
 
     }
 
-    private boolean find(int p, int k){
-        return false;
+    private boolean find(int p, int k) {
+        return getRoot(p) == getRoot(k);
     }
 }
