@@ -97,16 +97,7 @@ public class Percolation {
                 componentWeights[0] = ++componentWeights[0]; //magnetize :)
             }
 
-            //look to bottom
-            boolean isBottomVirtualSite = ((i + 1) > gridDimension);
-            int bottomSiteIndex;
-            if (isBottomVirtualSite) {
-                bottomSiteIndex = sitesGridSize-1;
-                weightAndUnion(currentSiteIndex,bottomSiteIndex );
-            } else if (isOpen(i + 1, j)) {
-                bottomSiteIndex = i * gridDimension + j;
-                weightAndUnion(currentSiteIndex,bottomSiteIndex);
-            }
+
 
             //look up
             boolean isTopVirtualSite = ((i - 1) == 0);
@@ -129,6 +120,17 @@ public class Percolation {
             if ((j + 1 <= gridDimension) && isOpen(i, j + 1)) {
                 int rightSiteIndex = (i - 1) * gridDimension + (j + 1);
                 weightAndUnion(currentSiteIndex,rightSiteIndex);
+            }
+
+            //look to bottom
+            boolean isBottomVirtualSite = ((i + 1) > gridDimension);
+            int bottomSiteIndex;
+            if (isBottomVirtualSite) {
+                bottomSiteIndex = sitesGridSize-1;
+                weightAndUnion(currentSiteIndex,bottomSiteIndex );
+            } else if (isOpen(i + 1, j)) {
+                bottomSiteIndex = i * gridDimension + j;
+                weightAndUnion(currentSiteIndex,bottomSiteIndex);
             }
         }
     }
