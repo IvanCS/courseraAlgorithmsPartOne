@@ -88,7 +88,7 @@ public class Percolation {
     public void open(int i, int j) {
         if (!isOpen(i, j)) {
 
-            int currentSiteIndex = (i - 1) * gridDimension + j;
+            int currentSiteIndex = getSiteIndexInArray(i, j);
 
             //open site with link to itself for default root and default weight
             if (!isOpen(i, j)) {
@@ -97,60 +97,63 @@ public class Percolation {
                 componentWeights[0] = ++componentWeights[0]; //magnetize :)
             }
 
-
-
             //look up
             boolean isTopVirtualSite = ((i - 1) == 0);
             int topSiteIndex;
             if (isTopVirtualSite) {
                 topSiteIndex = 0;
-                weightAndUnion(topSiteIndex,currentSiteIndex);
+                weightAndUnion(topSiteIndex, currentSiteIndex);
             } else if (isOpen(i - 1, j)) {
-                topSiteIndex = (i - 2) * gridDimension + j;
-                weightAndUnion(topSiteIndex,currentSiteIndex);
+                topSiteIndex = getSiteIndexInArray(i - 1, j);
+                weightAndUnion(topSiteIndex, currentSiteIndex);
             }
 
             //look to the left
             if ((j - 1 > 0) && isOpen(i, j - 1)) {
-                int leftSiteIndex = (i - 1) * gridDimension + (j - 1);
-                weightAndUnion(currentSiteIndex,leftSiteIndex);
+                int leftSiteIndex = getSiteIndexInArray(i, j - 1);
+                weightAndUnion(currentSiteIndex, leftSiteIndex);
             }
 
             //look to the right
             if ((j + 1 <= gridDimension) && isOpen(i, j + 1)) {
-                int rightSiteIndex = (i - 1) * gridDimension + (j + 1);
-                weightAndUnion(currentSiteIndex,rightSiteIndex);
+                int rightSiteIndex = getSiteIndexInArray(i, j + 1);
+                weightAndUnion(currentSiteIndex, rightSiteIndex);
             }
 
             //look to bottom
             boolean isBottomVirtualSite = ((i + 1) > gridDimension);
             int bottomSiteIndex;
             if (isBottomVirtualSite) {
-                bottomSiteIndex = sitesGridSize-1;
-                weightAndUnion(currentSiteIndex,bottomSiteIndex );
+                bottomSiteIndex = sitesGridSize - 1;
+                weightAndUnion(currentSiteIndex, bottomSiteIndex);
             } else if (isOpen(i + 1, j)) {
-                bottomSiteIndex = i * gridDimension + j;
-                weightAndUnion(currentSiteIndex,bottomSiteIndex);
+                bottomSiteIndex = getSiteIndexInArray(i + 1, j);
+                weightAndUnion(currentSiteIndex, bottomSiteIndex);
             }
         }
     }
 
     // is site (row i, column j) open?
     public boolean isOpen(int i, int j) {
-        if (((i < 1 || i > gridDimension) && (j < 1 || j > gridDimension))) {
-            throw new IndexOutOfBoundsException("indexes are out ouf range : 1.." + gridDimension);
+        int index = getSiteIndexInArray(i, j);
+        if (isIndexOutOfBound(i) || isIndexOutOfBound(j)) {
+            throw new IndexOutOfBoundsException("indexes: (i==" + i + " ,j==" + j + ") are out ouf range : 1.." + gridDimension);
         }
 
-        return flatSitesGrid[(i - 1) * gridDimension + j] != SITE_BLOCKED_STATE;
+        return flatSitesGrid[index] != SITE_BLOCKED_STATE;
     }
 
     // is site (row i, column j) full?
     public boolean isFull(int i, int j) {
         return isOpen(i, j) &&
-                hasBottomSibling(i, j) &&
-                hasUpSibling(i, j) &&
-                hasLeftSibling(i, j) &&
-                hasRightSibling(i, j);
+                isOpenFilSafe(i - 1, j) && //top
+                isOpenFilSafe(i + 1, j) && //bottom
+                isOpenFilSafe(i, j - 1) && //left
+                isOpenFilSafe(i, j + 1); //right
+    }
+
+    private int getSiteIndexInArray(int i, int j) {
+        return (i - 1) * gridDimension + j;
     }
 
 
@@ -164,24 +167,18 @@ public class Percolation {
 
     }
 
-    private boolean isOutOfBound(int index) {
-        return (index % gridDimension) == 0;
+    private boolean isPositionOutOfBound(int position) {
+        return position < 1 || position > sitesGridSize - 2;/* || (index % gridDimension) == 0;*/
     }
 
-    private boolean hasUpSibling(int i, int j) {
-        return isOutOfBound((i - 1) * j) || isOpen(i - 1, j);
+    private boolean isIndexOutOfBound(int index) {
+        return (index < 1 || index > gridDimension);
     }
 
-    private boolean hasBottomSibling(int i, int j) {
-        return isOutOfBound((i + 1) * j) || isOpen(i + 1, j);
-    }
-
-    private boolean hasLeftSibling(int i, int j) {
-        return isOutOfBound(i * (j - 1)) || isOpen(i, j - 1);
-    }
-
-    private boolean hasRightSibling(int i, int j) {
-        return isOutOfBound(i * (j + 1)) || isOpen(i, j + 1);
+    private boolean isOpenFilSafe(int i, int j) {
+        return isIndexOutOfBound(i) ||
+                isIndexOutOfBound(j) ||
+                isOpen(i, j);
     }
 
     private void weightAndUnion(int p, int k) {
@@ -207,19 +204,6 @@ public class Percolation {
         } else {
             return c;
         }
-
-//   int temp;
-// while (true) {
-//            temp = flatSitesGrid[parent];
-//
-//            if (parent == temp) {
-//                return parent;
-//            } else {
-//                parent = temp;
-//            }
-//
-
-
     }
 
     private boolean find(int p, int k) {
