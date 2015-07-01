@@ -3,7 +3,7 @@ package edu.coursera.ipetrushin.algorithms.partone.percolation;
 import java.util.Random;
 
 /**
- * TODO
+ * Percolation Statistics
  */
 public class PercolationStats {
 
@@ -15,22 +15,19 @@ public class PercolationStats {
     private double stddevValue;
 
     /**
-     * // perform T independent experiments on an N-by-N grid
+     * perform T independent experiments on an N-by-N grid
      *
-     * @param N
-     * @param T
+     * @param N grid dimension
+     * @param T number of experiments
      */
     public PercolationStats(int N, int T) {
         this.T = T;
         this.N = N;
-
         percolation = new Percolation(N);
         experimentsResults = new int[T];
 
         calculateMean();
         calculateStdDev();
-
-
     }
 
     private int percolateRandomlyAndGetThreshold(Percolation percolation) {
@@ -52,16 +49,15 @@ public class PercolationStats {
                 percolation.open(i, j);
                 thresholdCounter++;
             }
-
         }
 
         return thresholdCounter;
     }
 
     /**
-     * sample mean of percolation threshold
+     * calculates sample mean of percolation threshold
      *
-     * @return
+     * @return percents of mean value
      */
     public double mean() {
         double percent = (double) N * N / 100;
@@ -71,7 +67,7 @@ public class PercolationStats {
     /**
      * sample standard deviation of percolation threshold
      *
-     * @return
+     * @return percents of stddev value
      */
     public double stddev() {
         double percent = (N * N - mean()) / (T - 1);
@@ -79,6 +75,9 @@ public class PercolationStats {
     }
 
 
+    /**
+     * Calculates mean value
+     */
     private void calculateMean() {
         int experimentsResult = 0,
                 experimentThreshold;
@@ -96,6 +95,9 @@ public class PercolationStats {
     }
 
 
+    /**
+     * Calculates standard deviation value
+     */
     private void calculateStdDev() {
         for (int threshold : experimentsResults) {
             stddevValue += threshold * threshold - 2 * threshold * meanValue + meanValue * meanValue;
@@ -106,18 +108,18 @@ public class PercolationStats {
     }
 
     /**
-     * low  endpoint of 95% confidence interval
+     * calculates low endpoint of 95% confidence interval
      *
-     * @return
+     * @return low endpoint
      */
     public double confidenceLo() {
         return mean() - 1.96 * stddev() / Math.sqrt(T);
     }
 
     /**
-     * high endpoint of 95% confidence interval
+     * calculates high endpoint of 95% confidence interval
      *
-     * @return
+     * @return high endpoint
      */
     public double confidenceHi() {
         return mean() + 1.96 * stddev() / Math.sqrt(T);
@@ -151,7 +153,5 @@ public class PercolationStats {
         System.out.println("mean\t\t\t\t\t= " + percolationStats.mean());
         System.out.println("stddev\t\t\t\t\t= " + percolationStats.stddev());
         System.out.println("95% confidence interval = " + percolationStats.confidenceLo() + ", " + percolationStats.confidenceHi());
-
-
     }
 }
