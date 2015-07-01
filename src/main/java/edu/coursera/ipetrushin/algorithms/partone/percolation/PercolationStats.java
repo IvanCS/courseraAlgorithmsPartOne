@@ -23,7 +23,6 @@ public class PercolationStats {
     public PercolationStats(final int N, final int T) {
         this.T = T;
         this.N = N;
-        percolation = new Percolation(this.N);
         experimentsResults = new int[this.T];
 
         calculateMean();
@@ -83,12 +82,9 @@ public class PercolationStats {
                 experimentThreshold;
 
         for (int t = 0; t < T; t++) {
-            experimentThreshold = percolateRandomlyAndGetThreshold(percolation);
+            experimentThreshold = percolateRandomlyAndGetThreshold(new Percolation(N));
             experimentsResults[t] = experimentThreshold;
             experimentsResult += experimentThreshold;
-
-            percolation.resetGrid();
-            percolation.resetSiteWeights();
         }
 
         meanValue = (((double) experimentsResult) / T);

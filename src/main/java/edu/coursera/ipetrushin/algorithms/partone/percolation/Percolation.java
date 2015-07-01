@@ -70,8 +70,24 @@ public class Percolation {
         flatSitesGrid = new int[sitesGridSize];
         componentWeights = new int[sitesGridSize];
 
-        resetGrid();
-        resetVirtualSitesWeight();
+         /*
+        mark very first site, and a last one  as a virtual top and bottom sites,
+         which are open (have reference to a root) by default
+         */
+        flatSitesGrid[0] = 0; // in fact, it's initialized with zero by default, so the operation is redundant
+        flatSitesGrid[sitesGridSize - 1] = sitesGridSize - 1;
+
+        //initialize grid with blocked sites, despite virtual  sites
+        for (int i = 1; i <= sitesGridSize - 2; i++) {
+            flatSitesGrid[i] = SITE_BLOCKED_STATE;
+        }
+
+        /*
+         assign default size  ("1") for virtual site components.
+         all other components will get "0" while initialization of componentWeights array by default
+         */
+        componentWeights[0] = 1;
+        componentWeights[sitesGridSize - 1] = 1;
     }
 
     /**
@@ -281,43 +297,4 @@ public class Percolation {
         return getRoot(p) == getRoot(k);
     }
 
-    /**
-     * Resets grid
-     */
-    public void resetGrid() {
-       /*
-        mark very first site, and a last one  as a virtual top and bottom sites,
-         which are open (have reference to a root) by default
-         */
-        flatSitesGrid[0] = 0; // in fact, it's initialized with zero by default, so the operation is redundant
-        flatSitesGrid[sitesGridSize - 1] = sitesGridSize - 1;
-
-        //initialize grid with blocked sites, despite virtual  sites
-        for (int i = 1; i <= sitesGridSize - 2; i++) {
-            flatSitesGrid[i] = SITE_BLOCKED_STATE;
-        }
-    }
-
-    /**
-     * Resets weight of site components
-     */
-    public void resetSiteWeights() {
-        resetVirtualSitesWeight();
-
-        for (int weight = 1; weight < sitesGridSize - 1; weight++) {
-            componentWeights[weight] = 0;
-        }
-    }
-
-    /**
-     * Resets weights of virtual sites
-     */
-    private void resetVirtualSitesWeight() {
-          /*
-         assign default size  ("1") for virtual site components.
-         all other components will get "0" while initialization of componentWeights array by default
-         */
-        componentWeights[0] = 1;
-        componentWeights[sitesGridSize - 1] = 1;
-    }
 }
