@@ -131,10 +131,12 @@ public class Percolation {
 
             //look to bottom
             boolean isBottomVirtualSite = ((i + 1) > gridDimension);
-            int rootOfBottomSiteIndex;
+            int virtualBottomSiteIndex = sitesGridSize - 1;
             if (isBottomVirtualSite) {
-                rootOfBottomSiteIndex = sitesGridSize - 1;
-                weightAndUnion(currentSiteIndex, rootOfBottomSiteIndex);
+                if (isFull(i,j) || virtualBottomSiteIndex == getRoot(virtualBottomSiteIndex) ) {
+
+                    weightAndUnion(currentSiteIndex, virtualBottomSiteIndex);
+                }
             } else {
                 unionSiteWithItsSabling(i + 1, j, currentSiteIndex);
             }

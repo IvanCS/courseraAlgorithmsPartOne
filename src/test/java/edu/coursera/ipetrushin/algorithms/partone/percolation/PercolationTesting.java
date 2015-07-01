@@ -171,6 +171,48 @@ public class PercolationTesting {
 
         }
 
+
+
+    }
+
+    @Test
+    public void testInput3() throws Exception {
+
+        String url = "C:\\Users\\ipetrush\\gitHub\\courseraAlgorithmsPartOne\\src\\test\\java\\edu\\coursera\\ipetrushin\\algorithms\\partone\\percolation\\input3.txt";
+        //  String url = PercolationTesting.class.getResource("edu/coursera/ipetrushin/algorithms/partone/percolationinput6.txt").getPath();
+        Path path = Paths.get(url);
+
+        if (Files.exists(path)) {
+            try (BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
+
+                String line = reader.readLine();
+                if (line == null || line.isEmpty())
+                    return;
+
+                int n = Integer.parseInt(line);
+                Percolation percolation = new Percolation(n);
+                String[] position;
+
+                while (reader.ready()) {
+                    line = reader.readLine();
+                    line = line.trim();
+                    if (!line.isEmpty()) {
+                        position = line.split("\\s");
+
+                        int i = Integer.parseInt(position[0]);
+                        int j = Integer.parseInt(position[1]);
+                        percolation.open(i, j);
+                    }
+                }
+                Assert.assertTrue(percolation.percolates());
+                Assert.assertFalse(percolation.isFull(3, 1));
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        }
+
     }
 
 }
