@@ -1,3 +1,6 @@
+package edu.coursera.ipetrushin.algorithms.partone.percolation;
+
+import edu.coursera.ipetrushin.algorithms.partone.percolation.Percolation;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -105,5 +108,23 @@ public class PercolationTesting {
         Percolation percolation = new Percolation(4);
         percolation.open(1, 5);
     }
+
+    @Test
+    public void bugPercolates() {
+        Percolation percolation = new Percolation(4);
+
+        percolation.open(4, 4);
+
+        percolation.open(1, 4);
+
+        percolation.open(3, 4);
+
+        percolation.open(2, 4);
+        percolation.open(3, 3);
+
+
+        Assert.assertTrue(percolation.percolates());
+    }
+
 
 }

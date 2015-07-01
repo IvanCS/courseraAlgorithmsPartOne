@@ -1,3 +1,5 @@
+package edu.coursera.ipetrushin.algorithms.partone.percolation;
+
 /**
  * We model a percolation system using an N-by-N grid of sites.
  * Each site is either open or blocked. A full site is an open site that can be connected to an open site
@@ -64,29 +66,19 @@ public class Percolation {
         flatSitesGrid = new int[sitesGridSize];
         componentWeights = new int[sitesGridSize];
 
-        /*
-        mark very first site, and a last one  as a virtual top and bottom sites,
-         which are open (have reference to a root) by default
-         */
-        flatSitesGrid[0] = 0; // in fact, it's initialized with zero by default, so the operation is redundant
-        flatSitesGrid[sitesGridSize - 1] = sitesGridSize - 1;
+        resetGrid();
 
-        /*
+         /*
          assign default size  ("1") for virtual site components.
          all other components will get "0" while initialization of componentWeights array by default
          */
         componentWeights[0] = 1;
         componentWeights[sitesGridSize - 1] = 1;
-
-        //initialize grid with blocked sites, despite virtual  sites
-        for (int i = 1; i <= sitesGridSize - 2; i++) {
-            flatSitesGrid[i] = SITE_BLOCKED_STATE;
-        }
     }
 
     // open site (row i, column j) if it is not open already
     public void open(int i, int j) {
-        if (!isOpen(i, j)) {
+        if (!isOpenSingleton(i, j)) {
 
             int currentSiteIndex = getSiteIndexInArray(i, j);
 
@@ -100,56 +92,74 @@ public class Percolation {
             //look up
             boolean isTopVirtualSite = ((i - 1) == 0);
             int topSiteIndex;
+
             if (isTopVirtualSite) {
                 topSiteIndex = 0;
                 weightAndUnion(topSiteIndex, currentSiteIndex);
-            } else if (isOpen(i - 1, j)) {
-                topSiteIndex = getSiteIndexInArray(i - 1, j);
-                weightAndUnion(topSiteIndex, currentSiteIndex);
+            } else {
+                unionSiteWithItsSabling(i - 1, j, currentSiteIndex);
             }
 
             //look to the left
-            if ((j - 1 > 0) && isOpen(i, j - 1)) {
-                int leftSiteIndex = getSiteIndexInArray(i, j - 1);
-                weightAndUnion(currentSiteIndex, leftSiteIndex);
+            if (!isIndexOutOfBound(j - 1)) {
+                unionSiteWithItsSabling(i, j - 1, currentSiteIndex);
             }
 
             //look to the right
-            if ((j + 1 <= gridDimension) && isOpen(i, j + 1)) {
-                int rightSiteIndex = getSiteIndexInArray(i, j + 1);
-                weightAndUnion(currentSiteIndex, rightSiteIndex);
+            if (!isIndexOutOfBound(j + 1)) {
+                unionSiteWithItsSabling(i, j + 1, currentSiteIndex);
             }
 
             //look to bottom
             boolean isBottomVirtualSite = ((i + 1) > gridDimension);
-            int bottomSiteIndex;
+            int rootOfBottomSiteIndex;
             if (isBottomVirtualSite) {
-                bottomSiteIndex = sitesGridSize - 1;
-                weightAndUnion(currentSiteIndex, bottomSiteIndex);
-            } else if (isOpen(i + 1, j)) {
-                bottomSiteIndex = getSiteIndexInArray(i + 1, j);
-                weightAndUnion(currentSiteIndex, bottomSiteIndex);
+                rootOfBottomSiteIndex = sitesGridSize - 1;
+                weightAndUnion(currentSiteIndex, rootOfBottomSiteIndex);
+            } else {
+                unionSiteWithItsSabling(i + 1, j, currentSiteIndex);
             }
+        }
+    }
+
+//    private boolean isTopVirtualSite(int index) {
+//        return index < 1;
+//    }
+//
+//    private boolean isBottomVirtualSite(int index) {
+//        return index >= sitesGridSize - 1;
+//    }
+
+    private void unionSiteWithItsSabling(int i, int j, int currentSiteIndex) {
+        //look to the right
+        if (isOpen(i, j)) {
+            int sablingIndex = getRoot(getSiteIndexInArray(i, j));
+            weightAndUnion(currentSiteIndex, sablingIndex);
         }
     }
 
     // is site (row i, column j) open?
     public boolean isOpen(int i, int j) {
-        int index = getSiteIndexInArray(i, j);
         if (isIndexOutOfBound(i) || isIndexOutOfBound(j)) {
             throw new IndexOutOfBoundsException("indexes: (i==" + i + " ,j==" + j + ") are out ouf range : 1.." + gridDimension);
         }
 
+        int index = getSiteIndexInArray(i, j);
         return flatSitesGrid[index] != SITE_BLOCKED_STATE;
+    }
+
+    private boolean isOpenSingleton(int i, int j) {
+        int index = getSiteIndexInArray(i, j);
+        return isOpen(i, j) && flatSitesGrid[index] == index;
     }
 
     // is site (row i, column j) full?
     public boolean isFull(int i, int j) {
         return isOpen(i, j) &&
-                isOpenFilSafe(i - 1, j) && //top
-                isOpenFilSafe(i + 1, j) && //bottom
-                isOpenFilSafe(i, j - 1) && //left
-                isOpenFilSafe(i, j + 1); //right
+                isOpenFallSafe(i - 1, j) && //top
+                isOpenFallSafe(i + 1, j) && //bottom
+                isOpenFallSafe(i, j - 1) && //left
+                isOpenFallSafe(i, j + 1); //right
     }
 
     private int getSiteIndexInArray(int i, int j) {
@@ -175,7 +185,7 @@ public class Percolation {
         return (index < 1 || index > gridDimension);
     }
 
-    private boolean isOpenFilSafe(int i, int j) {
+    private boolean isOpenFallSafe(int i, int j) {
         return isIndexOutOfBound(i) ||
                 isIndexOutOfBound(j) ||
                 isOpen(i, j);
@@ -208,5 +218,37 @@ public class Percolation {
 
     private boolean find(int p, int k) {
         return getRoot(p) == getRoot(k);
+    }
+
+    public void resetGrid() {
+
+       /*
+        mark very first site, and a last one  as a virtual top and bottom sites,
+         which are open (have reference to a root) by default
+         */
+        flatSitesGrid[0] = 0; // in fact, it's initialized with zero by default, so the operation is redundant
+        flatSitesGrid[sitesGridSize - 1] = sitesGridSize - 1;
+
+        //initialize grid with blocked sites, despite virtual  sites
+        for (int i = 1; i <= sitesGridSize - 2; i++) {
+            flatSitesGrid[i] = SITE_BLOCKED_STATE;
+        }
+
+
+    }
+
+    public void resetSiteWeights() {
+
+         /*
+         assign default size  ("1") for virtual site components.
+         all other components will get "0" while initialization of componentWeights array by default
+         */
+        componentWeights[0] = 1;
+        componentWeights[sitesGridSize - 1] = 1;
+
+
+        for (int weight = 1; weight < sitesGridSize - 1; weight++) {
+            componentWeights[weight] = 0;
+        }
     }
 }
