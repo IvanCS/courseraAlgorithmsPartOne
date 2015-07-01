@@ -45,13 +45,13 @@ package edu.coursera.ipetrushin.algorithms.partone.percolation;
  */
 public class Percolation {
 
-    private int flatSitesGrid[];
-    private int componentWeights[];
+    private int[] flatSitesGrid;
+    private int[] componentWeights;
     private int countOfComponents;
     private int sitesGridSize;
     private int gridDimension;
-    private final static int COUNT_OF_VIRTUAL_SITES = 2;
-    private final static byte SITE_BLOCKED_STATE = -1;
+    private static final int COUNT_OF_VIRTUAL_SITES = 2;
+    private static final byte SITE_BLOCKED_STATE = -1;
 
     /**
      * Creates N-by-N grid, with all sites blocked
@@ -146,7 +146,6 @@ public class Percolation {
      * @param j column index
      * @return true if open, false otherwise
      */
-    // is site (row i, column j) open?
     public boolean isOpen(int i, int j) {
         if (isIndexOutOfBound(i) || isIndexOutOfBound(j)) {
             throw new IndexOutOfBoundsException("indexes: (i==" + i + " ,j==" + j + ") are out ouf range : 1.." + gridDimension);
@@ -176,11 +175,11 @@ public class Percolation {
      * @return true if full, false otherwise
      */
     public boolean isFull(int i, int j) {
-        return isOpen(i, j) &&
-                isOpenFallSafe(i - 1, j) && //top
-                isOpenFallSafe(i + 1, j) && //bottom
-                isOpenFallSafe(i, j - 1) && //left
-                isOpenFallSafe(i, j + 1); //right
+        return isOpen(i, j)
+                && isOpenFallSafe(i - 1, j) //top
+                && isOpenFallSafe(i + 1, j) //bottom
+                && isOpenFallSafe(i, j - 1)  //left
+                && isOpenFallSafe(i, j + 1); //right
     }
 
     /**
@@ -229,9 +228,9 @@ public class Percolation {
      * @return true if open, false otherwise
      */
     private boolean isOpenFallSafe(int i, int j) {
-        return isIndexOutOfBound(i) ||
-                isIndexOutOfBound(j) ||
-                isOpen(i, j);
+        return isIndexOutOfBound(i)
+                || isIndexOutOfBound(j)
+                || isOpen(i, j);
     }
 
     /**

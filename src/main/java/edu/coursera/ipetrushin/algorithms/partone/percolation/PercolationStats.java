@@ -3,7 +3,7 @@ package edu.coursera.ipetrushin.algorithms.partone.percolation;
 import java.util.Random;
 
 /**
- * Percolation Statistics
+ * Percolation Statistics.
  */
 public class PercolationStats {
 
@@ -15,16 +15,16 @@ public class PercolationStats {
     private double stddevValue;
 
     /**
-     * perform T independent experiments on an N-by-N grid
+     * perform T independent experiments on an N-by-N grid.
      *
      * @param N grid dimension
      * @param T number of experiments
      */
-    public PercolationStats(int N, int T) {
+    public PercolationStats(final int N, final int T) {
         this.T = T;
         this.N = N;
-        percolation = new Percolation(N);
-        experimentsResults = new int[T];
+        percolation = new Percolation(this.N);
+        experimentsResults = new int[this.T];
 
         calculateMean();
         calculateStdDev();
@@ -145,8 +145,8 @@ public class PercolationStats {
             throw new NullPointerException("please provide arguments values for N and T");
         }
 
-        int n = Integer.valueOf(args[0]);
-        int t = Integer.valueOf(args[0]);
+        int n = Integer.parseInt(args[0]);
+        int t = Integer.parseInt(args[0]);
 
         PercolationStats percolationStats = new PercolationStats(n, t);
 
