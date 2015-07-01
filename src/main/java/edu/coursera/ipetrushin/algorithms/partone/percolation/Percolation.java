@@ -105,7 +105,7 @@ public class Percolation {
             if (!isOpen(i, j)) {
                 flatSitesGrid[currentSiteIndex] = currentSiteIndex;
                 componentWeights[currentSiteIndex] = 1;
-                componentWeights[0] = ++componentWeights[0]; //magnetize :)
+                componentWeights[0] += 1; //magnetize :)
             }
 
             //look up
@@ -191,11 +191,7 @@ public class Percolation {
      * @return true if full, false otherwise
      */
     public boolean isFull(int i, int j) {
-        return isOpen(i, j)
-                && isOpenFallSafe(i - 1, j) //top
-                && isOpenFallSafe(i + 1, j) //bottom
-                && isOpenFallSafe(i, j - 1)  //left
-                && isOpenFallSafe(i, j + 1); //right
+        return isOpen(i, j) && find(0, getSiteIndexInArray(i, j));
     }
 
     /**
@@ -217,7 +213,7 @@ public class Percolation {
      */
     // does the system percolate?
     public boolean percolates() {
-        return getRoot(0) == getRoot(sitesGridSize - 1);
+        return find(0, sitesGridSize - 1);
     }
 
     // test client (optional)
@@ -263,11 +259,11 @@ public class Percolation {
         int weightParentOfK = componentWeights[kRoot];
 
         if (weightParentOfP >= weightParentOfK) {
-            flatSitesGrid[k] = pRoot;
-            componentWeights[pRoot] = ++componentWeights[pRoot];
+            flatSitesGrid[kRoot] = pRoot;
+            componentWeights[pRoot] += 1;
         } else {
-            flatSitesGrid[p] = kRoot;
-            componentWeights[kRoot] = ++componentWeights[kRoot];
+            flatSitesGrid[pRoot] = kRoot;
+            componentWeights[kRoot] += 1;
         }
     }
 

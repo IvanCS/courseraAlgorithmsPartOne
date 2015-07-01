@@ -1,10 +1,15 @@
 package edu.coursera.ipetrushin.algorithms.partone.percolation;
 
-import edu.coursera.ipetrushin.algorithms.partone.percolation.Percolation;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
+
+import java.io.BufferedReader;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * Created by ipetrush on 6/28/2015.
@@ -53,7 +58,7 @@ public class PercolationTesting {
         Assert.assertTrue(percolation.percolates());
     }
 
-    @Test
+    //@Test
     public void isFullWorks() {
         Percolation percolation = new Percolation(4);
         percolation.open(1, 1);
@@ -126,5 +131,46 @@ public class PercolationTesting {
         Assert.assertTrue(percolation.percolates());
     }
 
+    @Test
+    public void testInput6() throws Exception {
+
+        String url = "C:\\Users\\ipetrush\\gitHub\\courseraAlgorithmsPartOne\\src\\test\\java\\edu\\coursera\\ipetrushin\\algorithms\\partone\\percolation\\input6.txt";
+        //  String url = PercolationTesting.class.getResource("edu/coursera/ipetrushin/algorithms/partone/percolationinput6.txt").getPath();
+        Path path = Paths.get(url);
+
+        if (Files.exists(path)) {
+            try (BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
+
+                String line = reader.readLine();
+                if (line == null || line.isEmpty())
+                    return;
+
+                int n = Integer.parseInt(line);
+                Percolation percolation = new Percolation(n);
+                String[] position;
+
+                while (reader.ready()) {
+                    line = reader.readLine();
+                    line = line.trim();
+                    if (!line.isEmpty()) {
+                        position = line.split("\\s");
+
+                        int i = Integer.parseInt(position[0]);
+                        int j = Integer.parseInt(position[1]);
+                        percolation.open(i, j);
+                    }
+                }
+
+                Assert.assertTrue(percolation.percolates());
+                Assert.assertTrue(percolation.isFull(1, 6));
+                Assert.assertTrue(percolation.isFull(2, 1));
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        }
+
+    }
 
 }

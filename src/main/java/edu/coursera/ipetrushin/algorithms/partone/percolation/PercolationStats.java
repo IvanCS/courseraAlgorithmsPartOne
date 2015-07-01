@@ -21,6 +21,10 @@ public class PercolationStats {
      * @param T number of experiments
      */
     public PercolationStats(final int N, final int T) {
+        if(N <= 0 || T <= 0){
+            throw new IllegalArgumentException("constructor's arguments are out of range.");
+        }
+
         this.T = T;
         this.N = N;
         experimentsResults = new int[this.T];
