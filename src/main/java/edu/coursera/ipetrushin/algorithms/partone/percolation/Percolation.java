@@ -122,14 +122,6 @@ public class Percolation {
         }
     }
 
-//    private boolean isTopVirtualSite(int index) {
-//        return index < 1;
-//    }
-//
-//    private boolean isBottomVirtualSite(int index) {
-//        return index >= sitesGridSize - 1;
-//    }
-
     private void unionSiteWithItsSabling(int i, int j, int currentSiteIndex) {
         //look to the right
         if (isOpen(i, j)) {

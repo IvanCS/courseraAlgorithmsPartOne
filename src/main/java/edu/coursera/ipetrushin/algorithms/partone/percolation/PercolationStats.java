@@ -3,7 +3,7 @@ package edu.coursera.ipetrushin.algorithms.partone.percolation;
 import java.util.Random;
 
 /**
- * Created by ipetrush on 6/30/2015.
+ * TODO
  */
 public class PercolationStats {
 
@@ -74,7 +74,7 @@ public class PercolationStats {
      * @return
      */
     public double stddev() {
-        double percent = (N*N - mean())/(T-1);
+        double percent = (N * N - mean()) / (T - 1);
         return stddevValue / percent / 100;
     }
 
@@ -98,10 +98,10 @@ public class PercolationStats {
 
     private void calculateStdDev() {
         for (int threshold : experimentsResults) {
-            stddevValue += threshold*threshold - 2*threshold*meanValue + meanValue*meanValue;
+            stddevValue += threshold * threshold - 2 * threshold * meanValue + meanValue * meanValue;
         }
 
-        stddevValue /=  T - 1;
+        stddevValue /= T - 1;
         stddevValue = Math.sqrt(stddevValue);
     }
 
@@ -111,7 +111,7 @@ public class PercolationStats {
      * @return
      */
     public double confidenceLo() {
-        return mean() - 1.96*stddev()/Math.sqrt(T);
+        return mean() - 1.96 * stddev() / Math.sqrt(T);
     }
 
     /**
@@ -120,15 +120,38 @@ public class PercolationStats {
      * @return
      */
     public double confidenceHi() {
-        return mean() + 1.96*stddev()/Math.sqrt(T);
+        return mean() + 1.96 * stddev() / Math.sqrt(T);
     }
 
     /**
-     * test client (described below)
+     * test client
+     * <p/>
+     * the method that takes two command-line arguments N and T,
+     * performs T independent computational experiments (discussed above) on an N-by-N grid,
+     * and prints out the mean, standard deviation, and the 95% confidence interval for the percolation threshold.
+     * Use standard random from our standard libraries to generate random numbers;
+     * use standard statistics to compute the sample mean and standard deviation.
      *
      * @param args
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
+
+        if (args == null || args.length == 0 ||
+                args[0] == null || args[1] == null ||
+                args[0].isEmpty() || args[1].isEmpty()) {
+
+            throw new NullPointerException("please provide arguments values for N and T");
+        }
+
+        int n = Integer.valueOf(args[0]);
+        int t = Integer.valueOf(args[0]);
+
+        PercolationStats percolationStats = new PercolationStats(n, t);
+
+        System.out.println("mean\t\t\t\t\t= " + percolationStats.mean());
+        System.out.println("stddev\t\t\t\t\t= " + percolationStats.stddev());
+        System.out.println("95% confidence interval = " + percolationStats.confidenceLo() + ", " + percolationStats.confidenceHi());
+
 
     }
 }
