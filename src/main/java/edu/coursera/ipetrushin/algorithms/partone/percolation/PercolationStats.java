@@ -73,7 +73,7 @@ public class PercolationStats {
      * @return percents of stddev value
      */
     public double stddev() {
-        double percent = (N * N - mean()) / (T - 1);
+        double percent = (N * N - mean()) / Math.sqrt(T - 1);
         return stddevValue / percent / 100;
     }
 
@@ -101,6 +101,7 @@ public class PercolationStats {
     private void calculateStdDev() {
         for (int threshold : experimentsResults) {
             stddevValue += threshold * threshold - 2 * threshold * meanValue + meanValue * meanValue;
+            //stddevValue += ( threshold -  meanValue)*( threshold -  meanValue);
         }
 
         stddevValue /= T - 1;

@@ -18,8 +18,12 @@ public class PercolationStatsTesting {
 
     @Test
     public void testStdDevPositive() {
-        PercolationStats percolationStats = new PercolationStats(4, 10);
+        PercolationStats percolationStats = new PercolationStats(100, 50);
         double stddev = percolationStats.stddev();
+
+        System.out.println(percolationStats.mean());
+        System.out.println(stddev);
+        System.out.println(percolationStats.confidenceLo() + ", " + percolationStats.confidenceHi());
 
         Assert.assertTrue(stddev < 0.1);
     }

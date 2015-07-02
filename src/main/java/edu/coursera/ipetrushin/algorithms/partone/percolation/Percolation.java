@@ -131,11 +131,15 @@ public class Percolation {
 
             //look to bottom
             boolean isBottomVirtualSite = ((i + 1) > gridDimension);
-            int virtualBottomSiteIndex = sitesGridSize - 1;
+            int virtualBottomSiteRootIndex = sitesGridSize - 1;
             if (isBottomVirtualSite) {
-                if (isFull(i,j) || virtualBottomSiteIndex == getRoot(virtualBottomSiteIndex) ) {
+                if (isFull(i,j) || virtualBottomSiteRootIndex == flatSitesGrid[virtualBottomSiteRootIndex] ) {
 
-                    weightAndUnion(currentSiteIndex, virtualBottomSiteIndex);
+                    int pRoot = getRoot(currentSiteIndex);
+                    flatSitesGrid[virtualBottomSiteRootIndex] = pRoot;
+                    componentWeights[pRoot] += 1;
+
+                    //weightAndUnion(currentSiteIndex, virtualBottomSiteRootIndex);
                 }
             } else {
                 unionSiteWithItsSabling(i + 1, j, currentSiteIndex);
