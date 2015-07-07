@@ -31,51 +31,93 @@ import java.util.*;
  */
 public class Fast {
 
+    /**
+     * Points grid
+     */
     private Point[] points;
+
+    /**
+     * Points grid's size
+     */
     private int N;
+
+    /**
+     * Queue of origin-points
+     */
     private Queue<Point> origins;
 
 
     public Fast(Path path) throws Exception {
         StdDraw.setXscale(0, 32768);
         StdDraw.setYscale(0, 32768);
-        buildConvexHull(path);
+
+        initializePoints(path);
     }
 
     public static void main(String[] args) throws Exception {
         if (args == null || args.length < 1) {
             throw new IllegalArgumentException("please specify name of input file as an argument");
         }
-
         String fileName = args[0];
+
+        Fast fast = buildFastFromFile(fileName);
+        fast.recognizePattern();
+    }
+
+    /**
+     * Builds a {@link Fast} object from specified file
+     *
+     * @param fileName name of file containing points information
+     * @return {@link Fast}
+     * @throws Exception
+     */
+    private static Fast buildFastFromFile(String fileName) throws Exception {
         if (fileName == null || fileName.isEmpty()) {
             throw new IllegalArgumentException("specify file name!");
         }
 
-        URL path = Brute.class.getClassLoader().getResource(fileName);
-        Path p = Paths.get(path.toURI());
+        Path p = Paths.get(fileName);
+        if (!p.isAbsolute()) {
+            URL path = Brute.class.getClassLoader().getResource(fileName);
+            if (path != null) {
+                p = Paths.get(path.toURI());
+            }
+        }
+
         if (!Files.exists(p)) {
             throw new IllegalArgumentException("file for name : " + fileName + " doesn't exists");
         }
 
-        Fast fast = new Fast(p);
-        fast.is4CollinearPointsPatternRecognized();
-
+        return new Fast(p);
     }
 
-    private void buildConvexHull(Path pathToFile) throws Exception {
-        //TODO read form file
+    /**
+     * Initializes points grid from a file
+     *
+     * @param pathToFile
+     * @throws Exception
+     */
+    private void initializePoints(Path pathToFile) throws Exception {
+
         try (BufferedReader reader = Files.newBufferedReader(pathToFile, StandardCharsets.UTF_8);) {
             String line;
             String[] point;
             int i = 0;
 
             N = Integer.parseInt(reader.readLine());
+            if (N < 1) {
+                throw new IllegalArgumentException("count of points is wrong");
+            }
+
             points = new Point[N];
             origins = new LinkedList<>();
 
             while (reader.ready()) {
                 line = reader.readLine();
+                if (line == null) {
+                    throw new IllegalArgumentException("no points information provided in the input file : " + pathToFile.getFileName().toString());
+                }
+
                 line = line.trim();
                 if (!line.isEmpty()) {
                     point = line.split("\\s+");
@@ -93,6 +135,11 @@ public class Fast {
         }
     }
 
+    /**
+     * Sorts  list of {@link Point} items according to Shell algorithm
+     *
+     * @param l list for sorting
+     */
     private void shellSort(List<Point> l) {
         final int N = l.size();
         int h = 1;
@@ -102,8 +149,7 @@ public class Fast {
 
         while (h >= 1) {
             for (int i = h; i < N; i++) {
-
-                for (int j = i; j >= h && l.get(j).compareTo(l.get(j - h)) == -1; j -= h) {
+                for (int j = i; j >= h && l.get(j).compareTo(l.get(j - h)) < 0; j -= h) {
                     Point swap = l.get(j);
                     l.set(j, (l.get(j - h)));
                     l.set(j - h, swap);
@@ -113,6 +159,13 @@ public class Fast {
         }
     }
 
+    /**
+     * Sorts  array of {@link Comparable} items according to Shell algorithm
+     * by using specified {@link Comparator} implementation
+     *
+     * @param a          array for sorting
+     * @param comparator implementation of a comparator
+     */
     private void shellSort(Comparable[] a, Comparator comparator) {
         final int N = a.length;
         int h = 1;
@@ -123,28 +176,44 @@ public class Fast {
 
         while (h >= 1) {
             for (int i = h; i < N; i++) {
-
                 for (int j = i; j >= h && isLess(a[j], a[j - h], comparator); j -= h) {
-
-                    Comparable swap = a[j];
-                    a[j] = a[j - h];
-                    a[j - h] = swap;
+                    exchange(a, j, j - h);
                 }
             }
             h /= 3;
         }
     }
 
+    /**
+     * Exchanges two items in array.
+     *
+     * @param a
+     * @param p1
+     * @param p2
+     */
+    private void exchange(Comparable[] a, int p1, int p2) {
+        Comparable swap = a[p1];
+        a[p1] = a[p2];
+        a[p2] = swap;
+    }
+
+    /**
+     * Checks whether first {@link Comparable} item is  less than to another one
+     * according specified {@link Comparator} implementation.
+     */
     private boolean isLess(Comparable p, Comparable q, Comparator comparator) {
         if (comparator != null) {
-            return comparator.compare(p, q) == -1;
+            return comparator.compare(p, q) < 0;
         } else {
-            return p.compareTo(q) == -1;
+            return p.compareTo(q) < 0;
         }
     }
 
 
-    private boolean is4CollinearPointsPatternRecognized() {
+    /**
+     * Recognized 4-Collinear-Points pattern.
+     */
+    private void recognizePattern() {
         Point p;
         List<Point> collinearSegment = new ArrayList<>(32);//TODO what is resizing complexity for array list impl?
 
@@ -175,9 +244,13 @@ public class Fast {
 
             printoutSegment(collinearSegment);
         }
-        return true;
     }
 
+    /**
+     * Prints out list of points
+     *
+     * @param collinearList list to print
+     */
     private void printoutSegment(List<Point> collinearList) {
 
         if (collinearList != null && !collinearList.isEmpty()) {

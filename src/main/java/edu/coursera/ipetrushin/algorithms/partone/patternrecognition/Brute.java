@@ -21,15 +21,21 @@ import java.nio.file.Paths;
  */
 public class Brute {
 
+    /**
+     * Points grid
+     */
     private Point[] points;
-    private int N;
 
+    /**
+     * Points grid's size
+     */
+    private int N;
 
     public Brute(Path p) throws Exception {
         StdDraw.setXscale(0, 32768);
         StdDraw.setYscale(0, 32768);
 
-        buildConvexHull(p);
+        initializePoints(p);
         shellSort(points);
     }
 
@@ -37,26 +43,46 @@ public class Brute {
         if (args == null || args.length < 1) {
             throw new IllegalArgumentException("please specify name of input file as an argument");
         }
-
         String fileName = args[0];
+
+        Brute brute = buildBruteFromFile(fileName);
+        brute.recognizePattern();
+    }
+
+    /**
+     * Builds a {@link Brute} object from specified file
+     *
+     * @param fileName name of file containing points information
+     * @return {@link Brute}
+     * @throws Exception
+     */
+    private static Brute buildBruteFromFile(String fileName) throws Exception {
         if (fileName == null || fileName.isEmpty()) {
             throw new IllegalArgumentException("specify file name!");
         }
 
-        URL path = Brute.class.getClassLoader().getResource(fileName);
-        Path p = Paths.get(path.toURI());
+        Path p = Paths.get(fileName);
+        if (!p.isAbsolute()) {
+            URL path = Brute.class.getClassLoader().getResource(fileName);
+            if (path != null) {
+                p = Paths.get(path.toURI());
+            }
+        }
+
         if (!Files.exists(p)) {
             throw new IllegalArgumentException("file for name : " + fileName + " doesn't exists");
         }
 
-        Brute brute = new Brute(p);
-        brute.is4CollinearPointsPatternRecognized();
-
+        return new Brute(p);
     }
 
-    private void buildConvexHull(Path pathToFile) throws Exception {
-        //TODO read form file
-
+    /**
+     * Initializes points grid from a file
+     *
+     * @param pathToFile
+     * @throws Exception
+     */
+    private void initializePoints(Path pathToFile) throws Exception {
         try (BufferedReader reader = Files.newBufferedReader(pathToFile, StandardCharsets.UTF_8);) {
             String line;
             String[] point;
@@ -67,6 +93,10 @@ public class Brute {
 
             while (reader.ready()) {
                 line = reader.readLine();
+                if (line == null) {
+                    throw new IllegalArgumentException("no points information provided in the input file : " + pathToFile.getFileName().toString());
+                }
+
                 line = line.trim();
                 if (!line.isEmpty()) {
                     point = line.split("\\s+");
@@ -81,6 +111,11 @@ public class Brute {
         }
     }
 
+    /**
+     * Sorts  array of {@link Comparable} items according to Shell algorithm
+     *
+     * @param a array for sorting
+     */
     private void shellSort(Comparable[] a) {
         final int N = a.length;
         int h = 1;
@@ -91,7 +126,7 @@ public class Brute {
         while (h >= 1) {
             for (int i = h; i < N; i++) {
 
-                for (int j = i; j >= h && a[j].compareTo(a[j - h]) == -1; j -= h) {
+                for (int j = i; j >= h && a[j].compareTo(a[j - h]) < 0; j -= h) {
                     Comparable swap = a[j];
                     a[j] = a[j - h];
                     a[j - h] = swap;
@@ -101,8 +136,12 @@ public class Brute {
         }
     }
 
-
-    private boolean is4CollinearPointsPatternRecognized() {
+    /**
+     * Recognized 4-Collinear-Points pattern
+     *
+     * @return
+     */
+    private void recognizePattern() {
         Point p, q, s, r;
         StringBuilder sb = new StringBuilder(4 * 4);
 
@@ -127,7 +166,7 @@ public class Brute {
                             }
                             sb.append(segment[3]);
                             System.out.println(sb.toString());
-                            sb = new StringBuilder(4*4);
+                            sb = new StringBuilder(4 * 4);
 
                         }
                     }
@@ -135,14 +174,19 @@ public class Brute {
             }
 
         }
-
-        return true;
     }
 
+    /**
+     * Checks whether specified 4 points are collinear.
+     *
+     * @param p
+     * @param q
+     * @param s
+     * @param r
+     * @return <tt>true</tt> if the points are collinear, <tt>false</tt> otherwise
+     */
     private boolean isCollinear(Point p, Point q, Point s, Point r) {
         return (p.SLOPE_ORDER.compare(q, s) == 0
                 && p.SLOPE_ORDER.compare(s, r) == 0);
     }
-
-
 }

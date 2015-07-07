@@ -83,7 +83,7 @@ public class Point implements Comparable<Point> {
         if (this.y == that.y && this.x != that.x) return +0; //horizontal line segment
         if (this.x == that.x && this.y != that.y) return Double.POSITIVE_INFINITY;//vertical line segment
         //degenerate line segment (between a point and itself)
-        if (this.equals(that)) return Double.NEGATIVE_INFINITY;
+        if (this.y == that.y && this.x == that.x) return Double.NEGATIVE_INFINITY;
 
         double tmp = that.y - this.y;
         return tmp /= (that.x - this.x);
@@ -98,7 +98,7 @@ public class Point implements Comparable<Point> {
      * @return
      */
     public int compareTo(Point that) {
-        if (this.equals(that)) return 0;
+        if (this.y == that.y && this.x == that.x) return 0;
         if (this.y < that.y || (this.y == that.y && this.x < that.x)) return -1;
 
         return +1;
@@ -108,22 +108,5 @@ public class Point implements Comparable<Point> {
     public String toString() {
         /* DO NOT MODIFY */
         return "(" + x + ", " + y + ")";
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (o != null
-                && o instanceof Point
-                && (((Point) o).x == this.x)
-                && (((Point) o).y == this.y))
-            return true;
-        else return false;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = x;
-        result = 31 * result + y;
-        return result;
     }
 }
