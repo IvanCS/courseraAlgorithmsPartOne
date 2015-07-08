@@ -31,19 +31,23 @@ public class Brute {
      */
     private int N;
 
-    public Brute(Path p) throws Exception {
+   /* public Brute(Path p) throws Exception {
         StdDraw.setXscale(0, 32768);
         StdDraw.setYscale(0, 32768);
 
         initializePoints(p);
         shellSort(points);
-    }
+    }*/
 
     public static void main(String[] args) throws Exception {
         if (args == null || args.length < 1) {
             throw new IllegalArgumentException("please specify name of input file as an argument");
         }
         String fileName = args[0];
+
+        StdDraw.setXscale(0, 32768);
+        StdDraw.setYscale(0, 32768);
+
 
         Brute brute = buildBruteFromFile(fileName);
         brute.recognizePattern();
@@ -73,7 +77,10 @@ public class Brute {
             throw new IllegalArgumentException("file for name : " + fileName + " doesn't exists");
         }
 
-        return new Brute(p);
+        Brute brute = new Brute();
+        brute.initializePoints(p);
+        brute.shellSort(brute.points);
+        return brute;
     }
 
     /**

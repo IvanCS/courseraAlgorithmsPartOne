@@ -16,7 +16,7 @@ import edu.princeton.cs.introcs.StdDraw;
 
 import java.util.Comparator;
 
-public class Point implements Comparable<Point> {
+public class Point implements Comparable<Point>  , Cloneable{
 
     // compare points by slope to this point
     // compare points by slope
@@ -31,11 +31,16 @@ public class Point implements Comparable<Point> {
         public int compare(Point o1, Point o2) {
             double s1 = slopeTo(o1);
             double s2 = slopeTo(o2);
+
+          /*  if(s1 == s2 && s1 == 0) return +0;//horizontal line segment
+            if(s1 == s2 && s1 == Double.POSITIVE_INFINITY) return +2;//vertical line segment;
+            if(s1 == s2 && s1 == Double.NEGATIVE_INFINITY) return -2;*/
+
             if (s1 == s2) return +0;
             if (s1 < s2) return -1;
             return +1;
         }
-    };       // YOUR DEFINITION HERE
+    };
 
     private final int x;                              // x coordinate
     private final int y;                              // y coordinate
@@ -80,10 +85,11 @@ public class Point implements Comparable<Point> {
      * @return
      */
     public double slopeTo(Point that) {
+        if (this.y == that.y && this.x == that.x) return Double.NEGATIVE_INFINITY;
         if (this.y == that.y && this.x != that.x) return +0; //horizontal line segment
         if (this.x == that.x && this.y != that.y) return Double.POSITIVE_INFINITY;//vertical line segment
         //degenerate line segment (between a point and itself)
-        if (this.y == that.y && this.x == that.x) return Double.NEGATIVE_INFINITY;
+
 
         double tmp = that.y - this.y;
         return tmp /= (that.x - this.x);

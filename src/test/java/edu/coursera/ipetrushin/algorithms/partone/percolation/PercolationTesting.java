@@ -6,6 +6,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import java.io.BufferedReader;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -134,9 +135,9 @@ public class PercolationTesting {
     @Test
     public void testInput6() throws Exception {
 
-        String url = "C:\\Users\\ipetrush\\gitHub\\courseraAlgorithmsPartOne\\src\\test\\java\\edu\\coursera\\ipetrushin\\algorithms\\partone\\percolation\\input6.txt";
-        //  String url = PercolationTesting.class.getResource("edu/coursera/ipetrushin/algorithms/partone/percolationinput6.txt").getPath();
-        Path path = Paths.get(url);
+        String fileName = "input6.txt";
+        URL url = PercolationTesting.class.getClassLoader().getResource(fileName);
+        Path path = Paths.get(url.toURI());
 
         if (Files.exists(path)) {
             try (BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
@@ -172,15 +173,14 @@ public class PercolationTesting {
         }
 
 
-
     }
 
     @Test
     public void testInput3() throws Exception {
 
-        String url = "C:\\Users\\ipetrush\\gitHub\\courseraAlgorithmsPartOne\\src\\test\\java\\edu\\coursera\\ipetrushin\\algorithms\\partone\\percolation\\input3.txt";
-        //  String url = PercolationTesting.class.getResource("edu/coursera/ipetrushin/algorithms/partone/percolationinput6.txt").getPath();
-        Path path = Paths.get(url);
+        String fileName = "input3.txt";
+        URL url = PercolationTesting.class.getClassLoader().getResource(fileName);
+        Path path = Paths.get(url.toURI());
 
         if (Files.exists(path)) {
             try (BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
@@ -219,9 +219,9 @@ public class PercolationTesting {
     @Test
     public void testInput7() throws Exception {
 
-        String url = "C:\\Users\\ipetrush\\gitHub\\courseraAlgorithmsPartOne\\src\\test\\java\\edu\\coursera\\ipetrushin\\algorithms\\partone\\percolation\\input7.txt";
-        //  String url = PercolationTesting.class.getResource("edu/coursera/ipetrushin/algorithms/partone/percolationinput6.txt").getPath();
-        Path path = Paths.get(url);
+        String fileName = "input7.txt";
+        URL url = PercolationTesting.class.getClassLoader().getResource(fileName);
+        Path path = Paths.get(url.toURI());
 
         if (Files.exists(path)) {
             try (BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
@@ -243,9 +243,9 @@ public class PercolationTesting {
                         int i = Integer.parseInt(position[0]);
                         int j = Integer.parseInt(position[1]);
                         percolation.open(i, j);
-                        if(i == 7 && j == 5){
+                        if (i == 7 && j == 5) {
                             Assert.assertTrue(percolation.percolates());
-                           Assert.assertFalse(percolation.isFull(6,1)); //isFull(6, 1) returns wrong value [after 12 sites opened] - student   = true - reference = false
+                            Assert.assertFalse(percolation.isFull(6, 1)); //isFull(6, 1) returns wrong value [after 12 sites opened] - student   = true - reference = false
                         }
                     }
                 }

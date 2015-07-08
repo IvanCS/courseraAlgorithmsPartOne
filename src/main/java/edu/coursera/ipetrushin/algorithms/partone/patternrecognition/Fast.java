@@ -48,8 +48,8 @@ public class Fast {
 
 
     public Fast(Path path) throws Exception {
-        StdDraw.setXscale(0, 32768);
-        StdDraw.setYscale(0, 32768);
+        StdDraw.setXscale(0, 40000);
+        StdDraw.setYscale(0, 40000);
 
         initializePoints(path);
     }
@@ -220,8 +220,8 @@ public class Fast {
         while (!origins.isEmpty()) {
             p = origins.poll();
 
-            shellSort(points, p.SLOPE_ORDER);
-
+//            shellSort(points, p.SLOPE_ORDER);
+Arrays.sort(points,p.SLOPE_ORDER);
             int i = 1;
             while (i + 1 < N - 1 && p.SLOPE_ORDER.compare(points[i], points[i + 1]) != 0) {
                 i++;
