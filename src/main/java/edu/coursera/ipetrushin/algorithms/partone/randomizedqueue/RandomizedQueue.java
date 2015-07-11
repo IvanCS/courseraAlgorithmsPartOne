@@ -48,7 +48,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
      * @return <t>true</t> if empty, <t>false</t> otherwise.
      */
     public boolean isEmpty() {
-        return (size == 0);
+        return nodes == null || size <= 0;
     }
 
     /**
@@ -70,15 +70,16 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
             throw new NullPointerException("An item to add can't be null!");
         }
 
-        size++;
+        int newSize = size + 1;
 
-        if (nodes == null) {
-            nodes = (Item[]) new Object[size];
-            headIndex = size - 1;
+        if (isEmpty()) {
+            nodes = (Item[]) new Object[newSize];
+            headIndex = newSize - 1;
             tailIndex = headIndex;
             nodes[headIndex] = item;
+            size = newSize;
             return;
-        } else if (size > nodes.length) {
+        } else if (isQuoterFull()) {
             //resize
             Item[] resizedNodes = (Item[]) new Object[nodes.length * 2];
             for (int i = 0; i < nodes.length; i++) {
@@ -87,9 +88,12 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
             nodes = resizedNodes;
         }
 
+        size = newSize;
         nodes[++tailIndex] = item;
 
     }
+
+
 
     /**
      * Removes and return a random item
@@ -97,24 +101,43 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
      * @return removed item
      */
     public Item dequeue() {
-        if (size <= 0) {
+        if (isEmpty()) {
             throw new NoSuchElementException("The queue doesn't have any items!");
         }
 
         Item itemAtHead = nodes[headIndex];
-        --size;
+        int newSize = size - 1;
+
         ++headIndex;
 
-        if (size <= nodes.length / 2) {
+        if (isQuoterEmpty() && newSize != 0) {
             //resize
             Item[] resizedNodes = (Item[]) new Object[nodes.length / 2];
             for (int i = 0; i < resizedNodes.length; i++) {
                 resizedNodes[i] = nodes[i + headIndex];
             }
             nodes = resizedNodes;
+            headIndex = 0;
+            tailIndex = newSize - 1;
         }
 
+        size = newSize;
         return itemAtHead;
+    }
+
+    private boolean isQuoterFull() {
+        double percent = (double) nodes.length /100;
+        double currentCapacity = (double)size / percent / 100;
+
+        return currentCapacity >= 0.75;
+    }
+
+    private boolean isQuoterEmpty() {
+
+        double percent = (double) nodes.length /100;
+        double currentCapacity = (double)size / percent / 100;
+
+        return currentCapacity <= 0.25;
     }
 
 
@@ -170,11 +193,15 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 
         @Override
         public boolean hasNext() {
-            return currentNodeIndex < randomizedOrder.length;
+            return !isEmpty() && currentNodeIndex < randomizedOrder.length;
         }
 
         @Override
         public Item next() {
+            if (!hasNext()) {
+                throw new NoSuchElementException("The end of the Deque has been already reached!");
+            }
+
             int randomIndex = randomizedOrder[currentNodeIndex++];
             return (Item) nodes[randomIndex];
         }

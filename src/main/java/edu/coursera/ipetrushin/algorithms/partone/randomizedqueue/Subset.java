@@ -41,15 +41,11 @@ public class Subset {
         }
 
         Iterator<String> randomizedIterator = randomizedQueue.iterator();
-        StringBuilder stringBuilder = new StringBuilder(randomizedQueue.size() * 2);
         int i = 1;
 
-        while (k >= i++) {
-            stringBuilder.append(randomizedIterator.next()).append(" ");
+        while (k >= i++ && randomizedIterator.hasNext()) {
+            StdOut.println(randomizedIterator.next());
         }
-
-        StdOut.println(stringBuilder.toString());
-
 
     }
 }

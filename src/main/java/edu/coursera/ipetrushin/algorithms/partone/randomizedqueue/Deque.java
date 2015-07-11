@@ -46,15 +46,17 @@ public class Deque<Item> implements Iterable<Item> {
 
     /**
      * Checks whether the Deque instance is empty.
+     *
      * @return <t>true</t> if empty, <t>false</t> otherwise.
      */
     public boolean isEmpty() {
-        return (size() == 0);
+        return (size() <= 0);
     }
 
 
     /**
      * Counts the number of items on the Deque.
+     *
      * @return size of the deque instance
      */
     public int size() {
@@ -63,6 +65,7 @@ public class Deque<Item> implements Iterable<Item> {
 
     /**
      * Adds the item to the front.
+     *
      * @param item to add
      */
     public void addFirst(Item item) {
@@ -88,9 +91,14 @@ public class Deque<Item> implements Iterable<Item> {
 
     /**
      * Adds the item to the end.
+     *
      * @param item to add
      */
     public void addLast(Item item) {
+        if (item == null) {
+            throw new NullPointerException("Can't insert a null to the deque!");
+        }
+
         Node<Item> newItem = new Node<>();
         newItem.setNodeValue(item);
 
@@ -110,16 +118,23 @@ public class Deque<Item> implements Iterable<Item> {
 
     /**
      * Removes and return the item from the front
+     *
      * @return removed item
      */
     public Item removeFirst() {
         if (isEmpty()) {
-            new NoSuchElementException("Can't remove an item from an empty deque!");
+            throw new NoSuchElementException("Can't remove an item from an empty deque!");
         }
 
         Item removedValue = head.getNodeValue();
-        head.getNext().setLast(null);
-        head = head.getNext();
+
+        if (head == tail) {
+            head = null;
+            tail = head;
+        } else {
+            head.getNext().setLast(null);
+            head = head.getNext();
+        }
 
         decrementAndGetSize();
         return removedValue;
@@ -127,16 +142,23 @@ public class Deque<Item> implements Iterable<Item> {
 
     /**
      * Removes and return the item from the end
+     *
      * @return removed item
      */
     public Item removeLast() {
         if (isEmpty()) {
-            new NoSuchElementException("Can't remove an item from an empty deque!");
+            throw new NoSuchElementException("Can't remove an item from an empty deque!");
         }
 
         Item removedValue = tail.getNodeValue();
-        tail.getLast().setNext(null);
-        tail = tail.getLast();
+
+        if (tail == head) {
+            tail = null;
+            head = tail;
+        } else {
+            tail.getLast().setNext(null);
+            tail = tail.getLast();
+        }
 
         decrementAndGetSize();
         return removedValue;
@@ -145,6 +167,7 @@ public class Deque<Item> implements Iterable<Item> {
 
     /**
      * Gets an iterator over items in order from front to end
+     *
      * @return iterator implementation for the Deque
      */
     public Iterator<Item> iterator() {
@@ -153,6 +176,7 @@ public class Deque<Item> implements Iterable<Item> {
 
     /**
      * The Node class is representation of internal DS for Deque implementation
+     *
      * @param <Item> type of the Node value
      */
     private class Node<Item> {
@@ -188,6 +212,7 @@ public class Deque<Item> implements Iterable<Item> {
 
     /**
      * Implementation of an Iterator for the Deque
+     *
      * @param <Item> type of the items
      */
     private class DequeIterator<Item> implements Iterator<Item> {
@@ -195,8 +220,8 @@ public class Deque<Item> implements Iterable<Item> {
         private Node<Item> currentNode;
 
         public DequeIterator() {
-            currentNode =  new Node<>();
-            currentNode.setNext((Node<Item>)head);
+            currentNode = new Node<>();
+            currentNode.setNext((Node<Item>) head);
         }
 
         @Override
