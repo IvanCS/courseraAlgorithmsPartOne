@@ -1,10 +1,10 @@
 package edu.coursera.ipetrushin.algorithms.partone.randomizedqueue;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.Random;
 
 /*
-
 Corner cases.
     The order of two or more iterators to the same randomized queue must be mutually independent;
     each iterator must maintain its own random order.
@@ -18,10 +18,9 @@ Performance requirements.
     in constant amortized time and use space proportional to the number of items currently in the queue.
 
     That is, any sequence of M randomized queue operations (starting from an empty queue) should take at most cM steps in the worst case,
-     for some constant c. Additionally, your iterator implementation must support
-     operations next() and hasNext() in constant worst-case time;
-     and construction in linear time; you may use a linear amount of extra memory per iterator.
-
+    for some constant c. Additionally, your iterator implementation must support
+    operations next() and hasNext() in constant worst-case time;
+    and construction in linear time; you may use a linear amount of extra memory per iterator.
  */
 public class RandomizedQueue<Item> implements Iterable<Item> {
 
@@ -30,12 +29,12 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     private int tailIndex;
     private int size;
 
-    // private Iterator<Item> iterator;
 
-    // construct an empty randomized queue
+    /**
+     * Constructs an empty randomized queue.
+     */
     public RandomizedQueue() {
         size = 0;
-        //iterator = new RandomizedQueueIterator<Item>();
     }
 
     // unit testing
@@ -43,20 +42,32 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 
     }
 
-    // is the queue empty?
+    /**
+     * Checks whether the RandomizedQueue instance is empty.
+     *
+     * @return <t>true</t> if empty, <t>false</t> otherwise.
+     */
     public boolean isEmpty() {
         return (size == 0);
     }
 
-    // return the number of items on the queue
+    /**
+     * Counts the number of items on the RandomizedQueue.
+     *
+     * @return size of the RandomizedQueue instance
+     */
     public int size() {
         return size;
     }
 
-    // add the item
+    /**
+     * Adds the item to the tail of the queue
+     *
+     * @param item to add
+     */
     public void enqueue(Item item) {
         if (item == null) {
-            //TODO
+            throw new NullPointerException("An item to add can't be null!");
         }
 
         size++;
@@ -80,11 +91,14 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 
     }
 
-    // remove and return a random item
+    /**
+     * Removes and return a random item
+     *
+     * @return removed item
+     */
     public Item dequeue() {
-
         if (size <= 0) {
-            //TODO
+            throw new NoSuchElementException("The queue doesn't have any items!");
         }
 
         Item itemAtHead = nodes[headIndex];
@@ -103,20 +117,34 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         return itemAtHead;
     }
 
-    // return (but do not remove) a random item
+
+    /**
+     * Returns (but do not removes) a random item
+     *
+     * @return sample item
+     */
     public Item sample() {
         if (size <= 0) {
-            //TODO
+            throw new NoSuchElementException("The queue doesn't have any items!");
         }
 
         return new RandomizedQueueIterator<Item>(size).next();
     }
 
-    // return an independent iterator over items in random order
+    /**
+     * Gets an independent iterator over items in random order
+     *
+     * @return iterator implementation
+     */
     public Iterator<Item> iterator() {
         return new RandomizedQueueIterator<>(size);
     }
 
+    /**
+     * Random iterator implementation for the {@link RandomizedQueue}
+     *
+     * @param <Item> type of items
+     */
     private class RandomizedQueueIterator<Item> implements Iterator<Item> {
 
         private final int[] randomizedOrder;
@@ -125,23 +153,24 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         private RandomizedQueueIterator(int size) {
             currentNodeIndex = 0;
             randomizedOrder = new int[size];
-
             buildRandomOrder();
         }
 
-
+        /**
+         * Builds random order.
+         */
         private void buildRandomOrder() {
             Random random = new Random();
             for (int i = 0; i < randomizedOrder.length; i++) {
                 int randomPosition = random.nextInt(i + 1);
-                randomizedOrder[i] = randomPosition;
+                randomizedOrder[i] = randomizedOrder[randomPosition];
                 randomizedOrder[randomPosition] = i;
             }
         }
 
         @Override
         public boolean hasNext() {
-            return currentNodeIndex < randomizedOrder.length - 1;
+            return currentNodeIndex < randomizedOrder.length;
         }
 
         @Override
@@ -152,7 +181,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 
         @Override
         public void remove() {
-            // TODO throw new  OperationNotSupportedException("");
+            throw new UnsupportedOperationException("#remove() is not supported for the RandomizedQueue iterator!");
         }
     }
 
