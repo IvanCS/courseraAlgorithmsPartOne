@@ -27,25 +27,34 @@ public class Subset {
 
         int k = Integer.parseInt(args[0]);
 
-        String inputString = StdIn.readLine();
-        String[] input = inputString.trim().split("\\s+");
+        String inputString = null;
 
-        if (k > input.length) {
-            throw new IllegalArgumentException("Number of random items 'k' can't be bigger than number of items!");
+        while (StdIn.hasNextLine()) {
+            inputString = StdIn.readLine();
+
+            if (inputString == null || inputString.isEmpty()) {
+                throw new IllegalArgumentException("Subset is empty!!");
+            }
+            String[] input = inputString.trim().split("\\s+");
+
+            if (k > input.length) {
+                throw new IllegalArgumentException("Number of random items 'k' can't be bigger than number of items!");
+            }
+
+            RandomizedQueue<String> randomizedQueue = new RandomizedQueue<>();
+
+            for (String item : input) {
+                randomizedQueue.enqueue(item);
+            }
+
+            Iterator<String> randomizedIterator = randomizedQueue.iterator();
+            int i = 1;
+
+            while (k >= i++ && randomizedIterator.hasNext()) {
+                StdOut.println(randomizedIterator.next());
+            }
         }
 
-        RandomizedQueue<String> randomizedQueue = new RandomizedQueue<>();
-
-        for (String item : input) {
-            randomizedQueue.enqueue(item);
-        }
-
-        Iterator<String> randomizedIterator = randomizedQueue.iterator();
-        int i = 1;
-
-        while (k >= i++ && randomizedIterator.hasNext()) {
-            StdOut.println(randomizedIterator.next());
-        }
 
     }
 }

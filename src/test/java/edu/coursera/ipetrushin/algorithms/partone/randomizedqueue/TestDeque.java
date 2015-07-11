@@ -7,6 +7,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 @RunWith(JUnit4.class)
 public class TestDeque {
@@ -65,4 +66,55 @@ public class TestDeque {
         int sizeAfter = deque.size();
         Assert.assertEquals(sizeBefore, sizeAfter + 1);
     }
+
+    @Test
+    public void addFirstRemoveFirst() {
+        deque = new Deque<>();
+        int first = 1;
+        deque.addFirst(first);
+
+        Assert.assertEquals((Integer)first,deque.removeFirst());
+    }
+
+    @Test
+    public void addLastRemoveLast() {
+
+        int last = 10;
+        deque.addLast(last);
+
+        Assert.assertEquals((Integer)last,deque.removeLast());
+    }
+
+    @Test
+    public void addLastRemoveLastForEmptyDeque() {
+        deque = new Deque<>();
+        int last = 10;
+        deque.addLast(last);
+
+        Assert.assertEquals((Integer)last,deque.removeLast());
+    }
+
+    @Test
+    public void addFirstRemoveLast() {
+        deque = new Deque<>();
+        int firstAndLast = 10;
+        deque.addFirst(firstAndLast);
+
+        Assert.assertEquals((Integer)firstAndLast,deque.removeLast());
+        Assert.assertTrue(deque.isEmpty());
+    }
+
+    @Test(expected = NoSuchElementException.class)
+      public void removeLastFromEmptyDeque() {
+        deque = new Deque<>();
+        deque.removeLast();
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void removeFirstFromEmptyDeque() {
+        deque = new Deque<>();
+        deque.removeFirst();
+    }
+
+
 }

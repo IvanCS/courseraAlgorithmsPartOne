@@ -22,6 +22,7 @@ public class Deque<Item> implements Iterable<Item> {
      */
     public Deque() {
         size = 0;
+
     }
 
     // unit testing
