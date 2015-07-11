@@ -86,13 +86,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 
 
             for (int i = 0; i < nodes.length; i++) {
-                if (randomizedOrder != null) {
-                    if (i > headIndex || i == randomizedOrder[headIndex]) {
-                        resizedNodes[i] = nodes[i];
-                    }
-                } else {
                     resizedNodes[i] = nodes[i];
-                }
             }
             nodes = resizedNodes;
 

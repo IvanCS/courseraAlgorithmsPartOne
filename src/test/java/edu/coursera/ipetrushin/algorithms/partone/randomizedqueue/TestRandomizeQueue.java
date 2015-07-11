@@ -89,17 +89,19 @@ public class TestRandomizeQueue {
     @Test
     public void testRandomDeque(){
         rq = new RandomizedQueue<>();
-        rq.enqueue(1);
-        rq.enqueue(2);
-        rq.enqueue(3);
-        rq.enqueue(4);
-
+        rq.enqueue(341);
+        rq.enqueue(485);
+        rq.dequeue();    // ==> 341
+        rq.enqueue(64);
+        rq.isEmpty(); //    ==> false
+        rq.enqueue(16);
+        rq.isEmpty(); //    ==> false
+        rq.isEmpty();  //   ==> false
+        rq.enqueue(129);
         rq.dequeue();
-        rq.dequeue();
-        rq.dequeue();
 
 
-        Assert.assertEquals(1, rq.size());
+        Assert.assertEquals(3, rq.size());
     }
 
     @Test
